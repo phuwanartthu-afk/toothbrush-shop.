@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>แปรงสีฟันสายรักษ์โลก | สั่งซื้อออนไลน์</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;600;700&family=Sarabun:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#F6FAF9;--ink:#12343B;--teal:#0E4D5C;--mint:#CFE9E0;--coral:#FF6B57;--line:#D5E3E0;--white:#fff}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Sarabun,sans-serif;font-size:17px;line-height:1.6}
+h1,h2,h3,button{font-family:Prompt,sans-serif}
+.wrap{max-width:1040px;margin:0 auto;padding:0 20px}
+header.hero{background:var(--teal);color:#fff;padding:56px 0 64px}
+.hero .wrap{display:grid;grid-template-columns:1.1fr .9fr;gap:32px;align-items:center}
+.hero h1{font-size:clamp(34px,6vw,60px);line-height:1.15;margin:0 0 16px;font-weight:700}
+.hero p{max-width:34ch;color:#CFE9E0;margin:0 0 24px}
+.btn{display:inline-block;background:var(--coral);color:#fff;border:0;border-radius:999px;padding:14px 28px;font-size:18px;font-weight:600;cursor:pointer;text-decoration:none}
+.btn:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid #FFC857;outline-offset:2px}
+.hero img{width:100%;border-radius:50% 50% 12px 50%;display:block}
+section{padding:48px 0}
+h2{font-size:30px;margin:0 0 24px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px}
+.card{background:var(--white);border:1px solid var(--line);border-radius:16px;overflow:hidden;display:flex;flex-direction:column}
+.card img{width:100%;aspect-ratio:1;object-fit:cover}
+.card .b{padding:18px;display:flex;flex-direction:column;gap:6px;flex:1}
+.card h3{margin:0;font-size:20px}
+.sku{font-size:14px;color:#5C7A80}
+.price{font-family:Prompt;font-size:24px;font-weight:700;color:var(--teal)}
+.qty{display:flex;align-items:center;gap:12px;margin-top:auto;padding-top:10px}
+.qty button{width:40px;height:40px;border-radius:50%;border:1px solid var(--teal);background:#fff;font-size:22px;cursor:pointer;color:var(--teal)}
+.qty output{min-width:28px;text-align:center;font-weight:600;font-size:20px}
+.order{background:var(--mint)}
+form{display:grid;gap:14px;max-width:620px}
+label{font-weight:600;display:grid;gap:4px}
+input,textarea{font:inherit;padding:12px;border:1px solid #9DBFB6;border-radius:10px;background:#fff}
+.sum{background:#fff;border-radius:12px;padding:16px;border:1px solid var(--line)}
+.sum div{display:flex;justify-content:space-between}
+.total{font-weight:700;font-size:20px;border-top:1px solid var(--line);margin-top:8px;padding-top:8px}
+#msg{padding:14px;border-radius:10px;display:none}
+#msg.ok{display:block;background:#fff;border:2px solid var(--teal)}
+#msg.err{display:block;background:#fff;border:2px solid var(--coral)}
+footer{padding:28px 0;text-align:center;color:#5C7A80;font-size:15px}
+@media(max-width:760px){.hero .wrap{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
+</style>
+</head>
+<body>
+<header class="hero"><div class="wrap">
+  <div>
+    <h1>แปรงสีฟันที่ดีต่อฟัน และดีต่อโลก</h1>
+    <p>เลือกแปรงไม้ไผ่ขนนุ่มสำหรับทุกวัน หรือแปรงไฟฟ้า Sonic สำหรับคนอยากได้ฟันสะอาดเร็วขึ้น ส่งตรงถึงบ้านทั่วไทย</p>
+    <a class="btn" href="#products">เลือกแปรงเลย</a>
+  </div>
+  <img src="images/bamboo-soft.svg" alt="แปรงสีฟันไม้ไผ่">
+</div></header>
+
+<section id="products"><div class="wrap">
+  <h2>สินค้าของเรา</h2>
+  <div class="grid" id="grid"><p>กำลังโหลดสินค้า...</p></div>
+</div></section>
+
+<section class="order" id="order"><div class="wrap">
+  <h2>กรอกที่อยู่จัดส่ง</h2>
+  <form id="f">
+    <div class="sum" id="sum">ยังไม่ได้เลือกสินค้า</div>
+    <label>ชื่อ-นามสกุล<input name="name" required autocomplete="name"></label>
+    <label>เบอร์โทรศัพท์<input name="phone" required inputmode="tel" pattern="[0-9\-\s]{9,12}" autocomplete="tel"></label>
+    <label>ที่อยู่จัดส่ง (รวมรหัสไปรษณีย์)<textarea name="address" rows="3" required autocomplete="street-address"></textarea></label>
+    <button class="btn" type="submit" id="submit">สั่งซื้อ</button>
+    <div id="msg" role="status"></div>
+  </form>
+</div></section>
+<footer>ร้านแปรงสีฟันตัวอย่าง · งานแลนดิ้งเพจรายวิชาการจัดซื้อจัดหาและจัดการความสัมพันธ์กับคู่ค้า</footer>
+
+<script>
+// ใส่ URL ของ Google Apps Script (Web app) ที่ Deploy แล้ว
+const API_URL = "https://script.google.com/macros/s/AKfycbyTldv153dnjn_Yw0u5_7F0zEPWM9Pr4f86zH6K_47o4m0FEOl7Hp9UTvIBIcbmMg_H/exec";
+
+const FALLBACK = [
+  {sku:"TB-BAM-01",name:"แปรงสีฟันไม้ไผ่ ขนนุ่ม",price:59,stock:50,image:"images/bamboo-soft.svg",desc:"ด้ามไม้ไผ่ ย่อยสลายได้ ขนแปรงนุ่มไม่ระคายเหงือก"},
+  {sku:"TB-ELE-02",name:"แปรงสีฟันไฟฟ้า Sonic",price:390,stock:30,image:"images/sonic-electric.svg",desc:"สั่นสะเทือนระดับโซนิก ชาร์จ 1 ครั้งใช้ได้ 30 วัน"}
+];
+let products = [], cart = {};
+const $ = s => document.querySelector(s);
+const baht = n => "฿" + Number(n).toLocaleString("th-TH");
+
+async function load(){
+  try{
+    if(API_URL.includes("script.google.com")){
+      const r = await fetch(API_URL + "?action=products");
+      products = await r.json();
+    } else products = FALLBACK;
+  }catch(e){ products = FALLBACK; }
+  render();
+}
+function render(){
+  $("#grid").innerHTML = products.map(p => `
+    <article class="card">
+      <img src="${p.image}" alt="${p.name}">
+      <div class="b">
+        <h3>${p.name}</h3><div class="sku">รหัสสินค้า ${p.sku}</div>
+        <p>${p.desc||""}</p>
+        <div class="price">${baht(p.price)}</div>
+        <div class="qty">
+          <button type="button" aria-label="ลด" data-s="${p.sku}" data-d="-1">−</button>
+          <output id="q-${p.sku}">0</output>
+          <button type="button" aria-label="เพิ่ม" data-s="${p.sku}" data-d="1">+</button>
+        </div>
+      </div>
+    </article>`).join("");
+}
+document.addEventListener("click", e => {
+  const b = e.target.closest("[data-s]"); if(!b) return;
+  const s = b.dataset.s, p = products.find(x => x.sku === s);
+  cart[s] = Math.max(0, Math.min(p.stock ?? 99, (cart[s]||0) + Number(b.dataset.d)));
+  document.getElementById("q-"+s).textContent = cart[s];
+  summary();
+});
+function items(){ return products.filter(p => cart[p.sku]>0).map(p => ({sku:p.sku,name:p.name,qty:cart[p.sku],price:p.price})); }
+function summary(){
+  const it = items();
+  if(!it.length){ $("#sum").textContent = "ยังไม่ได้เลือกสินค้า"; return; }
+  const total = it.reduce((a,i)=>a+i.qty*i.price,0);
+  $("#sum").innerHTML = it.map(i=>`<div><span>${i.name} × ${i.qty}</span><span>${baht(i.qty*i.price)}</span></div>`).join("")
+    + `<div class="total"><span>รวมทั้งหมด</span><span>${baht(total)}</span></div>`;
+}
+$("#f").addEventListener("submit", async e => {
+  e.preventDefault();
+  const msg = $("#msg"), it = items();
+  if(!it.length){ msg.className="err"; msg.textContent="กรุณาเลือกสินค้าอย่างน้อย 1 รายการก่อนสั่งซื้อ"; return; }
+  const fd = new FormData(e.target);
+  const order = {action:"order", orderId:"ORD"+Date.now().toString().slice(-8),
+    name:fd.get("name"), phone:fd.get("phone"), address:fd.get("address"), items:it};
+  $("#submit").disabled = true;
+  try{
+    await fetch(API_URL, {method:"POST", mode:"no-cors", headers:{"Content-Type":"text/plain"}, body:JSON.stringify(order)});
+    msg.className="ok"; msg.textContent = "รับคำสั่งซื้อแล้ว เลขที่ออเดอร์ " + order.orderId;
+    e.target.reset(); cart = {}; render(); summary();
+  }catch(err){
+    msg.className="err"; msg.textContent="ส่งคำสั่งซื้อไม่สำเร็จ ตรวจสอบอินเทอร์เน็ตแล้วลองใหม่อีกครั้ง";
+  }
+  $("#submit").disabled = false;
+});
+load();
+</script>
+</body>
+</html>

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>หลังร้าน: หยิบสินค้า แพ็ค และพิมพ์ใบปะหน้า</title>
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;600&family=Sarabun:wght@400;600&display=swap" rel="stylesheet">
+<style>
+body{margin:0;font-family:Sarabun,sans-serif;background:#F6FAF9;color:#12343B;font-size:16px}
+h1,h2,button{font-family:Prompt,sans-serif}
+.wrap{max-width:980px;margin:0 auto;padding:20px}
+.bar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:16px}
+button{background:#0E4D5C;color:#fff;border:0;border-radius:8px;padding:10px 16px;cursor:pointer;font-size:15px}
+button.alt{background:#FF6B57}
+table{width:100%;border-collapse:collapse;background:#fff;margin-bottom:24px}
+th,td{border:1px solid #D5E3E0;padding:8px 10px;text-align:left}
+th{background:#CFE9E0}
+.order{background:#fff;border:1px solid #D5E3E0;border-radius:12px;padding:14px;margin-bottom:12px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.tag{font-size:13px;padding:2px 10px;border-radius:99px;background:#FFE9E3}
+.tag.packed{background:#CFE9E0}
+input{font:inherit;padding:8px;border:1px solid #9DBFB6;border-radius:8px}
+#labels{display:none}
+.label{width:100mm;height:150mm;border:2px solid #000;padding:6mm;box-sizing:border-box;page-break-after:always;font-size:14px;color:#000}
+.label h3{margin:0 0 4px;font-size:15px}
+.label .to{font-size:20px;font-weight:600;line-height:1.35;margin-bottom:8px}
+.label hr{border:0;border-top:1px dashed #000;margin:8px 0}
+@media print{
+  body *{visibility:hidden}
+  #labels,#labels *{visibility:visible}
+  #labels{display:block;position:absolute;left:0;top:0}
+  @page{size:100mm 150mm;margin:0}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>หลังร้าน</h1>
+  <div class="bar">
+    <button onclick="load()">รีเฟรชออเดอร์</button>
+    <label>ผู้ส่ง: <input id="sender" size="40" value="ร้านแปรงสีฟัน โทร 08x-xxx-xxxx กรุงเทพฯ 10xxx"></label>
+  </div>
+
+  <h2>รายการหยิบสินค้า (ออเดอร์สถานะ new)</h2>
+  <table><thead><tr><th>SKU</th><th>สินค้า</th><th>จำนวนที่ต้องหยิบ</th></tr></thead><tbody id="pick"></tbody></table>
+
+  <h2>ออเดอร์</h2>
+  <div class="bar">
+    <button class="alt" onclick="printAll()">พิมพ์ใบปะหน้าทั้งหมดที่ยังไม่แพ็ค</button>
+  </div>
+  <div id="orders">กำลังโหลด...</div>
+</div>
+<div id="labels"></div>
+
+<script>
+const API_URL = "https://script.google.com/macros/s/AKfycbyTldv153dnjn_Yw0u5_7F0zEPWM9Pr4f86zH6K_47o4m0FEOl7Hp9UTvIBIcbmMg_H/exec";
+let orders = {};
+const $ = s => document.querySelector(s);
+
+async function load(){
+  const r = await fetch(API_URL + "?action=orders");
+  const rows = await r.json();
+  orders = {};
+  rows.forEach(x => {
+    const o = orders[x.OrderID] ||= {id:x.OrderID,time:x.Timestamp,name:x.Name,phone:x.Phone,address:x.Address,status:x.Status,items:[]};
+    o.items.push({sku:x.SKU,name:x.Product,qty:Number(x.Qty)});
+  });
+  draw();
+}
+function draw(){
+  const list = Object.values(orders).reverse();
+  const pick = {};
+  list.filter(o=>o.status==="new").forEach(o=>o.items.forEach(i=>{
+    pick[i.sku] ||= {name:i.name,qty:0}; pick[i.sku].qty += i.qty; }));
+  $("#pick").innerHTML = Object.entries(pick).map(([s,p])=>`<tr><td>${s}</td><td>${p.name}</td><td><b>${p.qty}</b></td></tr>`).join("") || `<tr><td colspan="3">ไม่มีออเดอร์ที่ต้องหยิบ</td></tr>`;
+  $("#orders").innerHTML = list.map(o=>`
+    <div class="order">
+      <div><b>${o.id}</b> <span class="tag ${o.status==='packed'?'packed':''}">${o.status}</span><br>
+        ${o.name} · ${o.phone}<br>${o.address}<br>
+        ${o.items.map(i=>`${i.name} × ${i.qty}`).join(", ")}</div>
+      <div>
+        <button onclick="printOne('${o.id}')">พิมพ์ใบปะหน้า</button>
+        ${o.status==='new'?`<button class="alt" onclick="packed('${o.id}')">แพ็คแล้ว</button>`:""}
+      </div>
+    </div>`).join("") || "ยังไม่มีออเดอร์";
+}
+function labelHTML(o){
+  return `<div class="label">
+    <h3>ผู้ส่ง</h3><div>${$("#sender").value}</div><hr>
+    <h3>ผู้รับ</h3>
+    <div class="to">${o.name}<br>${o.phone}<br>${o.address}</div><hr>
+    <h3>รายการสินค้า (${o.id})</h3>
+    ${o.items.map(i=>`<div>${i.sku} ${i.name} × ${i.qty}</div>`).join("")}
+  </div>`;
+}
+function printOne(id){ $("#labels").innerHTML = labelHTML(orders[id]); window.print(); }
+function printAll(){
+  const l = Object.values(orders).filter(o=>o.status==="new");
+  if(!l.length){ alert("ไม่มีออเดอร์ที่ยังไม่แพ็ค"); return; }
+  $("#labels").innerHTML = l.map(labelHTML).join(""); window.print();
+}
+async function packed(id){
+  await fetch(API_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain"},body:JSON.stringify({action:"status",orderId:id,status:"packed"})});
+  orders[id].status = "packed"; draw();
+}
+load();
+</script>
+</body>
+</html>
